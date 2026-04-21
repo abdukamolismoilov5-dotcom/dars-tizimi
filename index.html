@@ -599,7 +599,6 @@ async function enterApp(){
       if(d && d.students){ S=d; }
     }
   }catch(e){ console.warn("enterApp load xato",e); }
-  startSync();
   ['stuOvl','tR1','tR2','tLOvl'].forEach(x=>I(x).style.display='none');
   I('app').style.display='block';
   I('hName').textContent=`${me.ism} ${me.fam||''}`.trim();
@@ -610,7 +609,11 @@ async function enterApp(){
   }
   if(isT){I('dTab').style.display='flex';sw('d');}
   else{I('dTab').style.display='none';sw('t');}
-  if(S.task&&!isT) I('tTask') && (I('tTask').value=S.task);
+  if(S.task&&!isT){ const tt=I('tTask');if(tt)tt.value=S.task; }
+  // Render after data loaded
+  if(isT) renderTeacher();
+  else renderStudent();
+  startSync();
 }
 
 function logout(){
