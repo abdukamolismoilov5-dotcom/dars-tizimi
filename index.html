@@ -470,14 +470,13 @@ async function startSync(){
       const d = await r.json();
       if(!d) return;
       const newStr = JSON.stringify(d);
-      if(newStr === lastSync) return; // o'zgarmagan
+      if(newStr === lastSync) return;
       lastSync = newStr;
       S = d;
-      // Sahifani yangilash
       if(isT) renderTeacher();
       else renderStudent();
     }catch(e){}
-  }, 3000);
+  }, 2000);
 }
 
 // ============================================================
@@ -577,8 +576,16 @@ function resetT(){
   S.teacher=null;save();I('tLOvl').style.display='none';I('tR1').style.display='flex';
 }
 
-function enterApp(){
+async function enterApp(){
   startSync();
+  // Firebase dan yangi ma'lumot yukla va render qil
+  try{
+    const r = await fetch(FB_URL+"/state.json");
+    if(r.ok){
+      const d = await r.json();
+      if(d && d.students){ S=d; }
+    }
+  }catch(e){}
   ['stuOvl','tR1','tR2','tLOvl'].forEach(x=>I(x).style.display='none');
   I('app').style.display='block';
   I('hName').textContent=`${me.ism} ${me.fam||''}`.trim();
