@@ -463,6 +463,20 @@ async function load(){
 // Real-vaqt yangilanish — har 3 soniyada Firebase tekshiradi
 let lastSync = "";
 async function startSync(){
+  // Darhol bir marta yuklash
+  try{
+    const r = await fetch(FB_URL+"/state.json");
+    if(r.ok){
+      const d = await r.json();
+      if(d && d.students){
+        S=d;
+        lastSync=JSON.stringify(d);
+        if(isT) renderTeacher();
+        else renderStudent();
+      }
+    }
+  }catch(e){}
+  // Keyin har 2 soniyada tekshir
   setInterval(async ()=>{
     try{
       const r = await fetch(FB_URL+"/state.json");
@@ -577,15 +591,15 @@ function resetT(){
 }
 
 async function enterApp(){
-  startSync();
-  // Firebase dan yangi ma'lumot yukla va render qil
+  // Firebase dan yangi ma'lumot yukla
   try{
     const r = await fetch(FB_URL+"/state.json");
     if(r.ok){
       const d = await r.json();
       if(d && d.students){ S=d; }
     }
-  }catch(e){}
+  }catch(e){ console.warn("enterApp load xato",e); }
+  startSync();
   ['stuOvl','tR1','tR2','tLOvl'].forEach(x=>I(x).style.display='none');
   I('app').style.display='block';
   I('hName').textContent=`${me.ism} ${me.fam||''}`.trim();
